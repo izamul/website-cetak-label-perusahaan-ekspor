@@ -14,21 +14,62 @@ class LabelController extends Controller
         return view('labels.index', compact('labels'));
     }
 
-    public function create(){
+    public function create()
+    {
         $templates = LabelTemplate::all();
-        return view('labels.create', compact('templates'));
+        $template = $templates->firstOrFail();
+
+        // Pakai cast dari model LabelTemplate; fallback kalau ternyata masih string
+        $defaults = is_array($template->defaults)
+            ? $template->defaults
+            : (json_decode($template->defaults, true) ?? []);
+
+        // Dummy Label (instance model, bukan stdClass)
+        $label = new \App\Models\Label([
+            'title' => 'Untitled Label',
+            'data'  => $defaults['keys']  ?? [],
+            'theme' => $defaults['theme'] ?? [],
+        ]);
+
+        // Set relasi biar $label->template & $label->assets bisa dipakai
+        $label->setRelation('template', $template);
+        $label->setRelation('assets', collect()); // kosong dulu → badgeSrc() tetap aman
+
+        return view('labels.create', compact('templates', 'label'));
     }
 
-    public function store(Request $r){
-        $data = $r->validate([
+
+    public function store(Request $r)
+    {
+        // Terima sebagai string, bukan array
+        $validated = $r->validate([
             'label_template_id' => 'required|exists:label_templates,id',
-            'title' => 'required|string|max:120',
-            'data' => 'required|array',
-            'theme' => 'required|array',
+            'title'             => 'required|string|max:120',
+            'data'              => 'required',   // <- string JSON
+            'theme'             => 'required',   // <- string JSON
         ]);
-        $label = Label::create($data + ['user_id'=>Auth::id()]);
-        return redirect()->route('labels.edit',$label)->with('ok','Label created');
+
+        // Decode aman
+        $dataArray  = json_decode($validated['data'], true);
+        $themeArray = json_decode($validated['theme'], true);
+
+        if (! is_array($dataArray) || ! is_array($themeArray)) {
+            return back()
+                ->withErrors(['data' => 'Payload data/theme tidak valid.'])
+                ->withInput();
+        }
+
+        $label = Label::create([
+            'user_id'           => auth()->id(),
+            'label_template_id' => $validated['label_template_id'],
+            'title'             => $validated['title'],
+            'data'              => $dataArray,
+            'theme'             => $themeArray,
+        ]);
+
+        return redirect()->route('labels.edit', $label)->with('ok', 'Label created');
     }
+
 
     public function edit(Label $label){
         $this->authorize('update', $label);
@@ -36,16 +77,32 @@ class LabelController extends Controller
         return view('labels.edit', compact('label'));
     }
 
-    public function update(Request $r, Label $label){
+    public function update(Request $r, Label $label)
+    {
         $this->authorize('update', $label);
-        $data = $r->validate([
+
+        $validated = $r->validate([
             'title' => 'required|string|max:120',
-            'data' => 'required|array',
-            'theme' => 'required|array',
+            'data'  => 'required', // string JSON
+            'theme' => 'required', // string JSON
         ]);
-        $label->update($data);
+
+        $data  = json_decode($validated['data'], true);
+        $theme = json_decode($validated['theme'], true);
+
+        if (!is_array($data) || !is_array($theme)) {
+            return back()->withErrors(['data' => 'Payload data/theme tidak valid.'])->withInput();
+        }
+
+        $label->update([
+            'title' => $validated['title'],
+            'data'  => $data,
+            'theme' => $theme,
+        ]);
+
         return back()->with('ok','Saved');
-    }
+}
+
 
     public function show(Label $label){
         $this->authorize('view', $label);
