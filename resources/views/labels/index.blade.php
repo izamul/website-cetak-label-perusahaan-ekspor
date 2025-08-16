@@ -3,29 +3,112 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-900">My Labels</h2>
 
-            {{-- <-- tombol header: pakai ! (important) biar tidak ketiban style header --}}
-            <a href="{{ route('labels.create') }}"
-                class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold
-                !bg-green-600 !text-white hover:!bg-green-700 focus:outline-none
-                focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            <a href="{{ route('labels.create') }}" class="btnx btnx--green">
+                {{-- plus icon --}}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11 4a1 1 0 1 1 2 0v7h7a1 1 0 1 1 0 2h-7v7a1 1 0 1 1-2 0v-7H4a1 1 0 1 1 0-2h7V4z" />
                 </svg>
                 Create
             </a>
         </div>
     </x-slot>
 
+    {{-- Scoped styles for nice buttons + spacing --}}
+    <style>
+        .btnx {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .55rem 1rem;
+            border-radius: .75rem;
+            font-weight: 700;
+            text-decoration: none;
+            line-height: 1;
+            border: 1px solid transparent;
+            transition: .15s ease;
+        }
+
+        .btnx svg {
+            width: 1rem;
+            height: 1rem
+        }
+
+        .btnx--outline {
+            background: #fff;
+            color: #374151;
+            border-color: #D1D5DB
+        }
+
+        .btnx--outline:hover {
+            background: #F9FAFB;
+            color: #111827
+        }
+
+        .btnx--outline:focus-visible {
+            outline: 2px solid transparent;
+            box-shadow: 0 0 0 3px rgba(17, 24, 39, .15)
+        }
+
+        .btnx--amber {
+            background: #FEF3C7;
+            color: #92400E;
+            border-color: #FCD34D
+        }
+
+        .btnx--amber:hover {
+            background: #FDE68A
+        }
+
+        .btnx--amber:focus-visible {
+            outline: 2px solid transparent;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, .35)
+        }
+
+        .btnx--green {
+            background: #16a34a;
+            color: #fff;
+            border-color: #15803d;
+            box-shadow: 0 2px 6px rgba(22, 163, 74, .25)
+        }
+
+        .btnx--green:hover {
+            background: #15803d
+        }
+
+        .btnx--green:focus-visible {
+            outline: 2px solid transparent;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, .35)
+        }
+
+        .btnx--red {
+            background: #dc2626;
+            color: #fff;
+            border-color: #b91c1c;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, .25)
+        }
+
+        .btnx--red:hover {
+            background: #b91c1c
+        }
+
+        .btnx--red:focus-visible {
+            outline: 2px solid transparent;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, .35)
+        }
+
+        /* header fallback mobile button */
+        .btnx--sm {
+            padding: .45rem .8rem;
+            border-radius: .65rem;
+            font-weight: 700
+        }
+    </style>
+
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        {{-- fallback bar di mobile --}}
+        {{-- Mobile title + create --}}
         <div class="mb-4 flex items-center justify-between sm:hidden">
             <span class="text-lg font-semibold text-gray-900">My Labels</span>
-            <a href="{{ route('labels.create') }}"
-                class="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold
-                !bg-green-600 !text-white hover:!bg-green-700">
-                Create
-            </a>
+            <a href="{{ route('labels.create') }}" class="btnx btnx--green btnx--sm">Create</a>
         </div>
 
         @if (session('ok'))
@@ -63,18 +146,42 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2">
-                        <a href="{{ route('labels.show', $label) }}"
-                            class="inline-flex items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">View</a>
-                        <a href="{{ route('labels.print', $label) }}" target="_blank"
-                            class="inline-flex items-center rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-100">Print</a>
-                        <a href="{{ route('labels.edit', $label) }}"
-                            class="inline-flex items-center rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white hover:bg-green-700">Edit</a>
+                    {{-- ACTIONS: bigger gaps & clear colors --}}
+                    <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+                        <a href="{{ route('labels.show', $label) }}" class="btnx btnx--outline">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 5c5 0 9 4 10 7-1 3-5 7-10 7S3 15 2 12c1-3 5-7 10-7zm0 2a5 5 0 1 0 .001 10.001A5 5 0 0 0 12 7z" />
+                            </svg>
+                            View
+                        </a>
+
+                        <a href="{{ route('labels.print', $label) }}" target="_blank" class="btnx btnx--amber">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M6 9V4h12v5h2a2 2 0 0 1 2 2v5h-4v4H8v-4H4v-5a2 2 0 0 1 2-2h0zm2 10h8v-4H8v4zm8-10V6H8v3h8z" />
+                            </svg>
+                            Print
+                        </a>
+
+                        <a href="{{ route('labels.edit', $label) }}" class="btnx btnx--green">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M21.7 2.3a2.6 2.6 0 0 0-3.7 0L16.9 3.4l3.7 3.7 1.1-1.1a2.6 2.6 0 0 0 0-3.7zM19.1 8.6 15.4 4.9 4.5 15.8V19.5h3.7L19.1 8.6z" />
+                            </svg>
+                            Edit
+                        </a>
+
                         <form method="POST" action="{{ route('labels.destroy', $label) }}"
                             onsubmit="return confirm('Delete this label permanently?')">
                             @csrf @method('DELETE')
-                            <button type="submit"
-                                class="inline-flex items-center rounded-lg bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700">Delete</button>
+                            <button type="submit" class="btnx btnx--red">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M9 3a1 1 0 0 0-1 1v1H5.5a1 1 0 1 0 0 2H6v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7h.5a1 1 0 1 0 0-2H16V4a1 1 0 0 0-1-1H9zm2 4a1 1 0 0 0-1 1v9a1 1 0 1 0 2 0V8a1 1 0 0 0-1-1zm4 0a1 1 0 0 0-1 1v9a1 1 0 1 0 2 0V8a1 1 0 0 0-1-1z" />
+                                </svg>
+                                Delete
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -82,9 +189,7 @@
         @empty
             <div class="rounded-xl border border-gray-200 bg-white p-12 text-center">
                 <p class="text-gray-600 mb-4">You don’t have any labels yet.</p>
-                <a href="{{ route('labels.create') }}"
-                    class="inline-flex items-center gap-2 rounded-lg bg-green-600 px-4 py-2 text-white text-sm font-semibold hover:bg-green-700">Create
-                    your first label</a>
+                <a href="{{ route('labels.create') }}" class="btnx btnx--green">Create your first label</a>
             </div>
         @endforelse
 
